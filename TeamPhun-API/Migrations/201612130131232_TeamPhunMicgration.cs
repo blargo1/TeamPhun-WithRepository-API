@@ -3,10 +3,70 @@ namespace TeamPhun_API.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialTeamPhunCreation : DbMigration
+    public partial class TeamPhunMicgration : DbMigration
     {
         public override void Up()
         {
+            CreateTable(
+                "dbo.AddOns",
+                c => new
+                    {
+                        AddOnId = c.Int(nullable: false, identity: true),
+                        MetallicInks = c.Double(nullable: false),
+                        Discharge = c.Double(nullable: false),
+                        Foil = c.Double(nullable: false),
+                        Flash = c.Double(nullable: false),
+                        PMSColorMatching = c.Double(nullable: false),
+                        FoldingBagging = c.Double(nullable: false),
+                        SalesTax = c.Double(nullable: false),
+                        SetUp = c.Double(nullable: false),
+                        AddOnUpdate = c.DateTime(nullable: false),
+                    })
+                .PrimaryKey(t => t.AddOnId);
+            
+            CreateTable(
+                "dbo.ColorQuantityPrices",
+                c => new
+                    {
+                        ColorTierId = c.Int(nullable: false),
+                        QuantityTierId = c.Int(nullable: false),
+                        Price = c.Double(nullable: false),
+                        PriceUpdate = c.DateTime(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.ColorTierId, t.QuantityTierId })
+                .ForeignKey("dbo.ColorTiers", t => t.ColorTierId, cascadeDelete: true)
+                .ForeignKey("dbo.QuantityTiers", t => t.QuantityTierId, cascadeDelete: true)
+                .Index(t => t.ColorTierId)
+                .Index(t => t.QuantityTierId);
+            
+            CreateTable(
+                "dbo.ColorTiers",
+                c => new
+                    {
+                        ColorTierId = c.Int(nullable: false, identity: true),
+                        Count = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.ColorTierId);
+            
+            CreateTable(
+                "dbo.QuantityTiers",
+                c => new
+                    {
+                        QuantityTierId = c.Int(nullable: false, identity: true),
+                        MinQuantity = c.Int(nullable: false),
+                        MaxQuantity = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.QuantityTierId);
+            
+            CreateTable(
+                "dbo.Configurations",
+                c => new
+                    {
+                        ConfigurationId = c.String(nullable: false, maxLength: 128),
+                        AddPrintLocationColorPrice = c.String(),
+                    })
+                .PrimaryKey(t => t.ConfigurationId);
+            
             CreateTable(
                 "dbo.Customers",
                 c => new
@@ -68,8 +128,10 @@ namespace TeamPhun_API.Migrations
                         Flash = c.Boolean(nullable: false),
                         FoldingAndBagging = c.Boolean(nullable: false),
                         SalesTax = c.Boolean(nullable: false),
+                        SetUp = c.Boolean(nullable: false),
+                        OrderLineItemCost = c.Single(nullable: false),
                         ProfitMargin = c.Single(nullable: false),
-                        OrderLineItemEstimate = c.Double(nullable: false),
+                        OrderLineItemClientEstimate = c.Double(nullable: false),
                         OrderLineItemProfit = c.Double(nullable: false),
                         OrderLineItemCreatedDate = c.DateTime(nullable: false),
                     })
@@ -89,7 +151,7 @@ namespace TeamPhun_API.Migrations
                         ProductCode = c.Int(nullable: false),
                         ProductName = c.String(),
                         ProductDescription = c.String(),
-                        TotalProductCost = c.Double(nullable: false),
+                        ProductCost = c.Double(nullable: false),
                         ProductCreatedDate = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.ProductId);
@@ -113,15 +175,24 @@ namespace TeamPhun_API.Migrations
             DropForeignKey("dbo.OrderLineItems", "OrderId", "dbo.Orders");
             DropForeignKey("dbo.OrderLineItems", "VendorId", "dbo.Vendors");
             DropForeignKey("dbo.OrderLineItems", "ProductId", "dbo.Products");
+            DropForeignKey("dbo.ColorQuantityPrices", "QuantityTierId", "dbo.QuantityTiers");
+            DropForeignKey("dbo.ColorQuantityPrices", "ColorTierId", "dbo.ColorTiers");
             DropIndex("dbo.OrderLineItems", new[] { "ProductId" });
             DropIndex("dbo.OrderLineItems", new[] { "VendorId" });
             DropIndex("dbo.OrderLineItems", new[] { "OrderId" });
             DropIndex("dbo.Orders", new[] { "CustomerId" });
+            DropIndex("dbo.ColorQuantityPrices", new[] { "QuantityTierId" });
+            DropIndex("dbo.ColorQuantityPrices", new[] { "ColorTierId" });
             DropTable("dbo.Vendors");
             DropTable("dbo.Products");
             DropTable("dbo.OrderLineItems");
             DropTable("dbo.Orders");
             DropTable("dbo.Customers");
+            DropTable("dbo.Configurations");
+            DropTable("dbo.QuantityTiers");
+            DropTable("dbo.ColorTiers");
+            DropTable("dbo.ColorQuantityPrices");
+            DropTable("dbo.AddOns");
         }
     }
 }

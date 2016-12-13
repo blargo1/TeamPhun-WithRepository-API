@@ -9,7 +9,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BDA084DD-AA93-4355-B038-43E708C30877}</ProjectGuid>
+    <ProjectGuid>{F6DCCAEB-9043-485D-AEB9-7185D29EC036}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -130,20 +130,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AddOnsController.cs" />
+    <Compile Include="Controllers\ColorQuantityPricesController.cs" />
+    <Compile Include="Controllers\ColorTiersController.cs" />
+    <Compile Include="Controllers\ConfigurationsController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\OrderLineItemsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\QuantityTiersController.cs" />
     <Compile Include="Controllers\VendorsController.cs" />
-    <Compile Include="data\TeamPhunDataContext.cs" />
+    <Compile Include="Data\TeamPhunDataContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201611301953036_InitialTeamPhunCreation.cs" />
-    <Compile Include="Migrations\201611301953036_InitialTeamPhunCreation.Designer.cs">
-      <DependentUpon>201611301953036_InitialTeamPhunCreation.cs</DependentUpon>
+    <Compile Include="Migrations\201612130131232_TeamPhunMicgration.cs" />
+    <Compile Include="Migrations\201612130131232_TeamPhunMicgration.Designer.cs">
+      <DependentUpon>201612130131232_TeamPhunMicgration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AddOn.cs" />
     <Compile Include="Models\ColorQuantityPrice.cs" />
     <Compile Include="Models\ColorTier.cs" />
     <Compile Include="Models\Configuration.cs" />
@@ -171,8 +177,8 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201611301953036_InitialTeamPhunCreation.resx">
-      <DependentUpon>201611301953036_InitialTeamPhunCreation.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201612130131232_TeamPhunMicgration.resx">
+      <DependentUpon>201612130131232_TeamPhunMicgration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -188,9 +194,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57450</DevelopmentServerPort>
+          <DevelopmentServerPort>54156</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:57450/</IISUrl>
+          <IISUrl>http://localhost:54156/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
