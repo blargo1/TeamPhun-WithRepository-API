@@ -14,6 +14,6 @@ namespace TeamPhun_API.Models
 
         //Make the QuantityTierId to be accessable through QuantityTierId as a foreign key in ColorQuantityPrice table
         public virtual ICollection<ColorQuantityPrice> ColorQuantityPrices { get; set; }
-
+        public object ColorTierId { get; internal set; }
     }
 }

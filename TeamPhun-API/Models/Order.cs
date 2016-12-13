@@ -8,8 +8,8 @@ namespace TeamPhun_API.Models
     public class Order
     {
         //primary key
-       [Key]
-       public int OrderId { get; set; }
+        [Key]
+        public int OrderId { get; set; }
 
         // customerId as a foreign key
         public int CustomerId { get; set; }

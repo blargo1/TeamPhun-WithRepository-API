@@ -11,16 +11,17 @@ namespace TeamPhun_API.Models
     {
         //ForeignKey keys
         //foreign keys
-        [Key]
-        [Column(Order = 0)]
+      //  [Key]
+      //  [Column(Order = 0)]
         public int ColorTierId { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
+      //  [Key]
+      //  [Column(Order = 1)]
         public int QuantityTierId { get; set; }
 
         ///price
-        public string Price { get; set; }
+        public double Price { get; set; }
+        public DateTime PriceUpdate { get; set; }
 
 
 

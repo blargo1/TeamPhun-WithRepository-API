@@ -7,13 +7,13 @@ namespace TeamPhun_API.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class AddOnCreation : IMigrationMetadata
+    public sealed partial class TeamPhunMicgration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddOnCreation));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(TeamPhunMicgration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201612121841174_AddOnCreation"; }
+            get { return "201612130131232_TeamPhunMicgration"; }
         }
         
         string IMigrationMetadata.Source

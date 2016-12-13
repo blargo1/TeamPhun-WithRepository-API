@@ -35,7 +35,7 @@ namespace TeamPhun_API.Models
         public DateTime OrderLineItemCreatedDate { get; set; }
 
         //Connecting Foreign keys
-        public virtual Order Order { get; set; }   
+        public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }
         public virtual Vendor Vendor { get; set; }
 
