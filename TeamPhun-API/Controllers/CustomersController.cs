@@ -1,33 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class CustomersController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<Customer> repository = null;
+
+        public CustomersController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<Customer>();
+        }
+
+        public CustomersController(IGenericRepository<Customer> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/Customers
-        public IQueryable<Customer> GetCustomers()
+        public IEnumerable<Customer> GetCustomers()
         {
-            return db.Customers;
+            return repository.SelectAll();
         }
 
         // GET: api/Customers/5
         [ResponseType(typeof(Customer))]
         public IHttpActionResult GetCustomer(int id)
         {
-            Customer customer = db.Customers.Find(id);
+            Customer customer = repository.SelectByID(id);
             if (customer == null)
             {
                 return NotFound();
@@ -50,11 +63,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(customer).State = EntityState.Modified;
+            repository.Update(customer);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +93,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Customers.Add(customer);
-            db.SaveChanges();
+            repository.Insert(customer);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = customer.CustomerId }, customer);
         }
@@ -90,14 +103,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(Customer))]
         public IHttpActionResult DeleteCustomer(int id)
         {
-            Customer customer = db.Customers.Find(id);
+            Customer customer = repository.SelectByID(id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            db.Customers.Remove(customer);
-            db.SaveChanges();
+            repository.Delete(customer);
+            repository.Save();
 
             return Ok(customer);
         }
@@ -106,14 +119,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool CustomerExists(int id)
         {
-            return db.Customers.Count(e => e.CustomerId == id) > 0;
+            return repository.SelectAll().Count(e => e.CustomerId == id) > 0;
         }
     }
 }

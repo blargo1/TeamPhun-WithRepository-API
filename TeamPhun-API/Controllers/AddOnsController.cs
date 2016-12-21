@@ -10,24 +10,40 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
 
 namespace TeamPhun_API.Controllers
 {
     public class AddOnsController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<AddOn> repository = null;
+
+        public AddOnsController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<AddOn>();
+        }
+
+        public AddOnsController(IGenericRepository<AddOn> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below
+        //private TeamPhunDataCon
 
         // GET: api/AddOns
-        public IQueryable<AddOn> GetAddOns()
+        public IEnumerable<AddOn> GetAddOns()
         {
-            return db.AddOns;
+            return repository.SelectAll();
         }
 
         // GET: api/AddOns/5
         [ResponseType(typeof(AddOn))]
         public IHttpActionResult GetAddOn(int id)
         {
-            AddOn addOn = db.AddOns.Find(id);
+            AddOn addOn = repository.SelectByID(id);
             if (addOn == null)
             {
                 return NotFound();
@@ -50,11 +66,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(addOn).State = EntityState.Modified;
+            repository.Update(addOn);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +96,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.AddOns.Add(addOn);
-            db.SaveChanges();
+            repository.Insert(addOn);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = addOn.AddOnId }, addOn);
         }
@@ -90,14 +106,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(AddOn))]
         public IHttpActionResult DeleteAddOn(int id)
         {
-            AddOn addOn = db.AddOns.Find(id);
+            AddOn addOn = repository.SelectByID(id);
             if (addOn == null)
             {
                 return NotFound();
             }
 
-            db.AddOns.Remove(addOn);
-            db.SaveChanges();
+            repository.Delete(addOn);
+            repository.Save();
 
             return Ok(addOn);
         }
@@ -106,14 +122,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool AddOnExists(int id)
         {
-            return db.AddOns.Count(e => e.AddOnId == id) > 0;
+            return repository.SelectAll().Count(e => e.AddOnId == id) > 0;
         }
     }
 }

@@ -1,33 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class ColorTiersController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<ColorTier> repository = null;
+
+        public ColorTiersController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<ColorTier>();
+        }
+
+        public ColorTiersController(IGenericRepository<ColorTier> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/ColorTiers
-        public IQueryable<ColorTier> GetColorTiers()
+        public IEnumerable<ColorTier> GetColorTiers()
         {
-            return db.ColorTiers;
+            return repository.SelectAll();
         }
 
         // GET: api/ColorTiers/5
         [ResponseType(typeof(ColorTier))]
         public IHttpActionResult GetColorTier(int id)
         {
-            ColorTier colorTier = db.ColorTiers.Find(id);
+            ColorTier colorTier = repository.SelectByID(id);
             if (colorTier == null)
             {
                 return NotFound();
@@ -50,11 +63,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(colorTier).State = EntityState.Modified;
+            repository.Update(colorTier);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +93,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.ColorTiers.Add(colorTier);
-            db.SaveChanges();
+            repository.Insert(colorTier);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = colorTier.ColorTierId }, colorTier);
         }
@@ -90,14 +103,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(ColorTier))]
         public IHttpActionResult DeleteColorTier(int id)
         {
-            ColorTier colorTier = db.ColorTiers.Find(id);
+            ColorTier colorTier = repository.SelectByID(id);
             if (colorTier == null)
             {
                 return NotFound();
             }
 
-            db.ColorTiers.Remove(colorTier);
-            db.SaveChanges();
+            repository.Delete(colorTier);
+            repository.Save();
 
             return Ok(colorTier);
         }
@@ -106,14 +119,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool ColorTierExists(int id)
         {
-            return db.ColorTiers.Count(e => e.ColorTierId == id) > 0;
+            return repository.SelectAll().Count(e => e.ColorTierId == id) > 0;
         }
     }
 }

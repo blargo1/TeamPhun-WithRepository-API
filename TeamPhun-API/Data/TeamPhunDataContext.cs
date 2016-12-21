@@ -20,8 +20,6 @@ namespace TeamPhun_API.data
         public IDbSet<Customer> Customers { get; set; }
         public IDbSet<Order> Orders { get; set; }
         public IDbSet<OrderLineItem> OrderLineItems { get; set; }
-        public IDbSet<Product> Products { get; set; }
-        public IDbSet<Vendor> Vendors { get; set; }
         public IDbSet<AddOn> AddOns { get; set; }
         public IDbSet<ColorTier> ColorTiers { get; set; }
         public IDbSet<QuantityTier> QuantityTiers { get; set; }

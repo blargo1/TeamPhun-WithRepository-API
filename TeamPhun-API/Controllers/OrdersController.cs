@@ -1,33 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class OrdersController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<Order> repository = null;
+
+        public OrdersController()
+
+        // Added 7 lines  below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<Order>();
+        }
+        public OrdersController(IGenericRepository<Order> repository)
+        {
+            this.repository = repository;
+        }
+
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/Orders
-        public IQueryable<Order> GetOrders()
+        public IEnumerable<Order> GetOrders()
         {
-            return db.Orders;
+            return repository.SelectAll();
         }
 
         // GET: api/Orders/5
         [ResponseType(typeof(Order))]
         public IHttpActionResult GetOrder(int id)
         {
-            Order order = db.Orders.Find(id);
+            Order order = repository.SelectByID(id);
             if (order == null)
             {
                 return NotFound();
@@ -50,11 +64,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(order).State = EntityState.Modified;
+            repository.Update(order);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +94,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Orders.Add(order);
-            db.SaveChanges();
+            repository.Insert(order);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = order.OrderId }, order);
         }
@@ -90,14 +104,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(Order))]
         public IHttpActionResult DeleteOrder(int id)
         {
-            Order order = db.Orders.Find(id);
+            Order order = repository.SelectByID(id);
             if (order == null)
             {
                 return NotFound();
             }
 
-            db.Orders.Remove(order);
-            db.SaveChanges();
+            repository.Delete(order);
+            repository.Save();
 
             return Ok(order);
         }
@@ -106,14 +120,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool OrderExists(int id)
         {
-            return db.Orders.Count(e => e.OrderId == id) > 0;
+            return repository.SelectAll().Count(e => e.OrderId == id) > 0;
         }
     }
 }

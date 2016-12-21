@@ -137,16 +137,14 @@
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\OrderLineItemsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
-    <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\QuantityTiersController.cs" />
-    <Compile Include="Controllers\VendorsController.cs" />
     <Compile Include="Data\TeamPhunDataContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201612130131232_TeamPhunMicgration.cs" />
-    <Compile Include="Migrations\201612130131232_TeamPhunMicgration.Designer.cs">
-      <DependentUpon>201612130131232_TeamPhunMicgration.cs</DependentUpon>
+    <Compile Include="Migrations\201612132042434_TeamPhunDataCreation.cs" />
+    <Compile Include="Migrations\201612132042434_TeamPhunDataCreation.Designer.cs">
+      <DependentUpon>201612132042434_TeamPhunDataCreation.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AddOn.cs" />
@@ -156,10 +154,10 @@
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderLineItem.cs" />
-    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\QuantityTier.cs" />
-    <Compile Include="Models\Vendor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\GenericRepository.cs" />
+    <Compile Include="Repository\IGenericRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -177,8 +175,8 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201612130131232_TeamPhunMicgration.resx">
-      <DependentUpon>201612130131232_TeamPhunMicgration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201612132042434_TeamPhunDataCreation.resx">
+      <DependentUpon>201612132042434_TeamPhunDataCreation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -196,7 +194,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54156</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:54156/</IISUrl>
+          <IISUrl>http://localhost:57450/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

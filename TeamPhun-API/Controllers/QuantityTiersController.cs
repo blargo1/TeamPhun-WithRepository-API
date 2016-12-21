@@ -1,33 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class QuantityTiersController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<QuantityTier> repository = null;
+
+        public QuantityTiersController()
+
+        // Added 7 lines  below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<QuantityTier>();
+        }
+        public QuantityTiersController(IGenericRepository<QuantityTier> repository)
+        {
+            this.repository = repository;
+        }
+
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/QuantityTiers
-        public IQueryable<QuantityTier> GetQuantityTiers()
+        public IEnumerable<QuantityTier> GetQuantityTiers()
         {
-            return db.QuantityTiers;
+            return repository.SelectAll();
         }
 
         // GET: api/QuantityTiers/5
         [ResponseType(typeof(QuantityTier))]
         public IHttpActionResult GetQuantityTier(int id)
         {
-            QuantityTier quantityTier = db.QuantityTiers.Find(id);
+            QuantityTier quantityTier = repository.SelectByID(id);
             if (quantityTier == null)
             {
                 return NotFound();
@@ -50,11 +64,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(quantityTier).State = EntityState.Modified;
+            repository.Update(quantityTier);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +94,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.QuantityTiers.Add(quantityTier);
-            db.SaveChanges();
+            repository.Insert(quantityTier);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = quantityTier.QuantityTierId }, quantityTier);
         }
@@ -90,14 +104,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(QuantityTier))]
         public IHttpActionResult DeleteQuantityTier(int id)
         {
-            QuantityTier quantityTier = db.QuantityTiers.Find(id);
+            QuantityTier quantityTier = repository.SelectByID(id);
             if (quantityTier == null)
             {
                 return NotFound();
             }
 
-            db.QuantityTiers.Remove(quantityTier);
-            db.SaveChanges();
+            repository.Delete(quantityTier);
+            repository.Save();
 
             return Ok(quantityTier);
         }
@@ -106,14 +120,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool QuantityTierExists(int id)
         {
-            return db.QuantityTiers.Count(e => e.QuantityTierId == id) > 0;
+            return repository.SelectAll().Count(e => e.QuantityTierId == id) > 0;
         }
     }
 }

@@ -1,33 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class ConfigurationsController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<Configuration> repository = null;
+
+        public ConfigurationsController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<Configuration>();
+        }
+
+        public ConfigurationsController(IGenericRepository<Configuration> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/Configurations
-        public IQueryable<Configuration> GetConfigurations()
+        public IEnumerable<Configuration> GetConfigurations()
         {
-            return db.Configurations;
+            return repository.SelectAll();
         }
 
         // GET: api/Configurations/5
         [ResponseType(typeof(Configuration))]
         public IHttpActionResult GetConfiguration(string id)
         {
-            Configuration configuration = db.Configurations.Find(id);
+            Configuration configuration = repository.SelectByID(id);
             if (configuration == null)
             {
                 return NotFound();
@@ -50,11 +63,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(configuration).State = EntityState.Modified;
+            repository.Update(configuration);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,11 +93,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Configurations.Add(configuration);
+            repository.Insert(configuration);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -105,14 +118,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(Configuration))]
         public IHttpActionResult DeleteConfiguration(string id)
         {
-            Configuration configuration = db.Configurations.Find(id);
+            Configuration configuration = repository.SelectByID(id);
             if (configuration == null)
             {
                 return NotFound();
             }
 
-            db.Configurations.Remove(configuration);
-            db.SaveChanges();
+            repository.Delete(configuration);
+            repository.Save();
 
             return Ok(configuration);
         }
@@ -121,14 +134,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool ConfigurationExists(string id)
         {
-            return db.Configurations.Count(e => e.ConfigurationId == id) > 0;
+            return repository.SelectAll().Count(e => e.ConfigurationId == id) > 0;
         }
     }
 }

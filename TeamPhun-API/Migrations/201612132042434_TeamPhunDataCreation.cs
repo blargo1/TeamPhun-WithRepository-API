@@ -3,7 +3,7 @@ namespace TeamPhun_API.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class TeamPhunMicgration : DbMigration
+    public partial class TeamPhunDataCreation : DbMigration
     {
         public override void Up()
         {
@@ -115,8 +115,6 @@ namespace TeamPhun_API.Migrations
                     {
                         OrderLineItemId = c.Int(nullable: false, identity: true),
                         OrderId = c.Int(nullable: false),
-                        VendorId = c.Int(nullable: false),
-                        ProductId = c.Int(nullable: false),
                         Description = c.String(),
                         TotalPieces = c.Int(nullable: false),
                         TotalNumberColors = c.Int(nullable: false),
@@ -134,38 +132,17 @@ namespace TeamPhun_API.Migrations
                         OrderLineItemClientEstimate = c.Double(nullable: false),
                         OrderLineItemProfit = c.Double(nullable: false),
                         OrderLineItemCreatedDate = c.DateTime(nullable: false),
+                        VendorName = c.String(),
+                        CategoryId = c.Int(nullable: false),
+                        CategoryName = c.String(),
+                        BrandName = c.String(),
+                        StyleId = c.Int(nullable: false),
+                        CasePrice = c.String(),
+                        StyleTitle = c.String(),
                     })
                 .PrimaryKey(t => t.OrderLineItemId)
-                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
-                .ForeignKey("dbo.Vendors", t => t.VendorId, cascadeDelete: true)
                 .ForeignKey("dbo.Orders", t => t.OrderId, cascadeDelete: true)
-                .Index(t => t.OrderId)
-                .Index(t => t.VendorId)
-                .Index(t => t.ProductId);
-            
-            CreateTable(
-                "dbo.Products",
-                c => new
-                    {
-                        ProductId = c.Int(nullable: false, identity: true),
-                        ProductCode = c.Int(nullable: false),
-                        ProductName = c.String(),
-                        ProductDescription = c.String(),
-                        ProductCost = c.Double(nullable: false),
-                        ProductCreatedDate = c.DateTime(nullable: false),
-                    })
-                .PrimaryKey(t => t.ProductId);
-            
-            CreateTable(
-                "dbo.Vendors",
-                c => new
-                    {
-                        VendorId = c.Int(nullable: false, identity: true),
-                        VendorName = c.String(),
-                        VendorProductCode = c.Int(nullable: false),
-                        VendorInfo = c.String(),
-                    })
-                .PrimaryKey(t => t.VendorId);
+                .Index(t => t.OrderId);
             
         }
         
@@ -173,18 +150,12 @@ namespace TeamPhun_API.Migrations
         {
             DropForeignKey("dbo.Orders", "CustomerId", "dbo.Customers");
             DropForeignKey("dbo.OrderLineItems", "OrderId", "dbo.Orders");
-            DropForeignKey("dbo.OrderLineItems", "VendorId", "dbo.Vendors");
-            DropForeignKey("dbo.OrderLineItems", "ProductId", "dbo.Products");
             DropForeignKey("dbo.ColorQuantityPrices", "QuantityTierId", "dbo.QuantityTiers");
             DropForeignKey("dbo.ColorQuantityPrices", "ColorTierId", "dbo.ColorTiers");
-            DropIndex("dbo.OrderLineItems", new[] { "ProductId" });
-            DropIndex("dbo.OrderLineItems", new[] { "VendorId" });
             DropIndex("dbo.OrderLineItems", new[] { "OrderId" });
             DropIndex("dbo.Orders", new[] { "CustomerId" });
             DropIndex("dbo.ColorQuantityPrices", new[] { "QuantityTierId" });
             DropIndex("dbo.ColorQuantityPrices", new[] { "ColorTierId" });
-            DropTable("dbo.Vendors");
-            DropTable("dbo.Products");
             DropTable("dbo.OrderLineItems");
             DropTable("dbo.Orders");
             DropTable("dbo.Customers");

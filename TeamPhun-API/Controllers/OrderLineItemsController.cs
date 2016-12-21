@@ -1,33 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
+using System.Collections.Generic;
 
 namespace TeamPhun_API.Controllers
 {
     public class OrderLineItemsController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<OrderLineItem> repository = null;
+
+        public OrderLineItemsController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<OrderLineItem>();
+        }
+
+        public OrderLineItemsController(IGenericRepository<OrderLineItem> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/OrderLineItems
-        public IQueryable<OrderLineItem> GetOrderLineItems()
+        public IEnumerable<OrderLineItem> GetOrderLineItems()
         {
-            return db.OrderLineItems;
+            return repository.SelectAll();
         }
 
         // GET: api/OrderLineItems/5
         [ResponseType(typeof(OrderLineItem))]
         public IHttpActionResult GetOrderLineItem(int id)
         {
-            OrderLineItem orderLineItem = db.OrderLineItems.Find(id);
+            OrderLineItem orderLineItem = repository.SelectByID(id);
             if (orderLineItem == null)
             {
                 return NotFound();
@@ -50,11 +63,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(orderLineItem).State = EntityState.Modified;
+            repository.Update(orderLineItem);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +93,8 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.OrderLineItems.Add(orderLineItem);
-            db.SaveChanges();
+            repository.Insert(orderLineItem);
+            repository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = orderLineItem.OrderLineItemId }, orderLineItem);
         }
@@ -90,14 +103,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(OrderLineItem))]
         public IHttpActionResult DeleteOrderLineItem(int id)
         {
-            OrderLineItem orderLineItem = db.OrderLineItems.Find(id);
+            OrderLineItem orderLineItem = repository.SelectByID(id);
             if (orderLineItem == null)
             {
                 return NotFound();
             }
 
-            db.OrderLineItems.Remove(orderLineItem);
-            db.SaveChanges();
+            repository.Delete(orderLineItem);
+            repository.Save();
 
             return Ok(orderLineItem);
         }
@@ -106,14 +119,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool OrderLineItemExists(int id)
         {
-            return db.OrderLineItems.Count(e => e.OrderLineItemId == id) > 0;
+            return repository.SelectAll().Count(e => e.OrderLineItemId == id) > 0;
         }
     }
 }

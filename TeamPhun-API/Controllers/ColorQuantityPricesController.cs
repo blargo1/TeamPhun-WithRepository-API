@@ -10,24 +10,40 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using TeamPhun_API.Models;
 using TeamPhun_API.data;
+using TeamPhun_API.Repository;
 
 namespace TeamPhun_API.Controllers
 {
     public class ColorQuantityPricesController : ApiController
     {
-        private TeamPhunDataContext db = new TeamPhunDataContext();
+        // Added 2 lines below for testing Generic Repository
+        private IGenericRepository<ColorQuantityPrice> repository = null;
+
+        public ColorQuantityPricesController()
+
+        // Added lines 26-33 below for testing Generic Repository
+        {
+            this.repository = new GenericRepository<ColorQuantityPrice>();
+        }
+
+        public ColorQuantityPricesController(IGenericRepository<ColorQuantityPrice> repository)
+        {
+            this.repository = repository;
+        }
+        //Comment out or remove line below(private TeamPhunDataContext db = new TeamPhunDataContext();)
+        //private TeamPhunDataContext db = new TeamPhunDataContext();
 
         // GET: api/ColorQuantityPrices
-        public IQueryable<ColorQuantityPrice> GetColorQuantityPrices()
+        public IEnumerable<ColorQuantityPrice> GetColorQuantityPrices()
         {
-            return db.ColorQuantityPrices;
+            return repository.SelectAll();
         }
 
         // GET: api/ColorQuantityPrices/5
         [ResponseType(typeof(ColorQuantityPrice))]
         public IHttpActionResult GetColorQuantityPrice(int id)
         {
-            ColorQuantityPrice colorQuantityPrice = db.ColorQuantityPrices.Find(id);
+            ColorQuantityPrice colorQuantityPrice = repository.SelectByID(id);
             if (colorQuantityPrice == null)
             {
                 return NotFound();
@@ -50,11 +66,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest();
             }
 
-            db.Entry(colorQuantityPrice).State = EntityState.Modified;
+            repository.Update(colorQuantityPrice);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,11 +96,11 @@ namespace TeamPhun_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.ColorQuantityPrices.Add(colorQuantityPrice);
+            repository.Insert(colorQuantityPrice);
 
             try
             {
-                db.SaveChanges();
+                repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -105,14 +121,14 @@ namespace TeamPhun_API.Controllers
         [ResponseType(typeof(ColorQuantityPrice))]
         public IHttpActionResult DeleteColorQuantityPrice(int id)
         {
-            ColorQuantityPrice colorQuantityPrice = db.ColorQuantityPrices.Find(id);
+            ColorQuantityPrice colorQuantityPrice = repository.SelectByID(id);
             if (colorQuantityPrice == null)
             {
                 return NotFound();
             }
 
-            db.ColorQuantityPrices.Remove(colorQuantityPrice);
-            db.SaveChanges();
+            repository.Delete(colorQuantityPrice);
+            repository.Save();
 
             return Ok(colorQuantityPrice);
         }
@@ -121,14 +137,14 @@ namespace TeamPhun_API.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool ColorQuantityPriceExists(int id)
         {
-            return db.ColorQuantityPrices.Count(e => e.ColorTierId == id) > 0;
+            return repository.SelectAll().Count(e => e.ColorTierId == id) > 0;
         }
     }
 }
